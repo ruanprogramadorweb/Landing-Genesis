@@ -96,15 +96,41 @@ header{display:flex;justify-content:space-between;padding:20px}
   overflow-x:auto;
   padding:20px;
 
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scroll-behavior:smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 
   touch-action: pan-x;
+
+  /* importante: melhora performance no mobile */
+  will-change: scroll-position;
 }
 
 .slider::-webkit-scrollbar{
   display:none;
+}
+
+.model{
+  flex:0 0 75%;
+  max-width:280px;
+
+  scroll-snap-align:center;
+
+  background:#111;
+  border-radius:15px;
+  padding:15px;
+
+  transition:transform .25s ease, box-shadow .25s ease;
+  will-change: transform;
+}
+
+@media(min-width:768px){
+  .model{flex:0 0 30%;}
+}
+
+.model.active{
+  transform:scale(1.08);
+  box-shadow:0 0 30px #00FF88;
 }
 
 /* ===== CARD ===== */
@@ -440,32 +466,6 @@ function draw(){
 
 draw();
 
-// SLIDER MANUAL (TOQUE E ARRASTAR)
-let slider = document.getElementById('slider');
-let isDown = false;
-let startX;
-let scrollLeft;
-
-slider.addEventListener('mousedown', (e) => {
-  isDown = true;
-  startX = e.pageX - slider.offsetLeft;
-  scrollLeft = slider.scrollLeft;
-});
-
-slider.addEventListener('mouseleave', () => isDown = false);
-slider.addEventListener('mouseup', () => isDown = false);
-
-slider.addEventListener('mousemove', (e) => {
-  if(!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 2;
-  slider.scrollLeft = scrollLeft - walk;
-});
-
-
-
-document.addEventListener("DOMContentLoaded", function(){
 
 // ===== CARROSSEL AVANÇADO =====
 let slider = document.getElementById('slider');
@@ -511,55 +511,44 @@ window.scrollSlider = function(dir){
   slider.scrollBy({left: dir * width, behavior:'smooth'});
 }
 
-// INÉRCIA
-let isDown=false,startX,scrollLeft,velocity=0,raf;
+// ===== SLIDER ULTRA FLUIDO =====
+const slider = document.getElementById('slider');
+const slides = document.querySelectorAll('.model');
+const dotsContainer = document.getElementById('dots');
 
-slider.addEventListener('mousedown',(e)=>{
-  isDown=true;
-  startX=e.pageX;
-  scrollLeft=slider.scrollLeft;
-});
+if (slider && slides.length) {
 
-slider.addEventListener('mouseup',()=>{
-  isDown=false;
-  momentum();
-});
+  // DOTS
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    if (i === 0) dot.classList.add('active');
+    dotsContainer.appendChild(dot);
+  });
 
-slider.addEventListener('mouseleave',()=> isDown=false);
+  const dots = document.querySelectorAll('.dot');
 
-slider.addEventListener('mousemove',(e)=>{
-  if(!isDown)return;
-  let walk=(e.pageX-startX);
-  velocity=walk*0.2;
-  slider.scrollLeft=scrollLeft-walk;
-});
+  function updateActive() {
+    const center = slider.scrollLeft + slider.offsetWidth / 2;
 
-slider.addEventListener('touchstart',(e)=>{
-  startX=e.touches[0].pageX;
-  scrollLeft=slider.scrollLeft;
-});
+    slides.forEach((el, i) => {
+      const elCenter = el.offsetLeft + el.offsetWidth / 2;
+      const dist = Math.abs(center - elCenter);
 
-slider.addEventListener('touchmove',(e)=>{
-  let walk=(e.touches[0].pageX-startX);
-  velocity=walk*0.2;
-  slider.scrollLeft=scrollLeft-walk;
-});
-
-slider.addEventListener('touchend',momentum);
-
-function momentum(){
-  cancelAnimationFrame(raf);
-  function run(){
-    slider.scrollLeft -= velocity;
-    velocity *= 0.95;
-    if(Math.abs(velocity)>0.5){
-      raf=requestAnimationFrame(run);
-    }
+      el.classList.toggle('active', dist < el.offsetWidth / 2);
+      dots[i].classList.toggle('active', dist < el.offsetWidth / 2);
+    });
   }
-  run();
-}
 
-});
+  slider.addEventListener('scroll', () => {
+    requestAnimationFrame(updateActive);
+  });
+
+  window.scrollSlider = (dir) => {
+    const width = slides[0].offsetWidth + 20;
+    slider.scrollBy({ left: dir * width, behavior: 'smooth' });
+  };
+}
 </script>
 
 </body>
