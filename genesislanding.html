@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gênesis Mobilidade | Scooters Elétricas</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:#000;color:#fff;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;z-index:-1;filter: blur(1.5px)}
+
+
+/* LOADER */
+.loader{
+ position:fixed;top:0;left:0;width:100%;height:100%;
+ background:#000;display:flex;align-items:center;justify-content:center;
+ z-index:2000;flex-direction:column;
+}
+.loader img{
+ width:240px;
+ animation:pulseLogo 1.5s infinite alternate;
+}
+@keyframes pulseLogo{
+ from{transform:scale(1);filter:drop-shadow(0 0 5px #00FF88)}
+ to{transform:scale(1.1);filter:drop-shadow(0 0 25px #00FF88)}
+}
+
+/* LOGO ENTRADA */
+.logo img{
+ width:280px;
+ opacity:0;
+ transform:translateY(-20px);
+ animation:logoIn 1s ease forwards;
+ animation-delay:0.5s;
+}
+@keyframes logoIn{
+ to{opacity:1;transform:translateY(0)}
+}
+
+header{display:flex;justify-content:space-between;padding:20px}
+
+/* Centralizar logo no mobile */
+@media (max-width:768px){
+  header{justify-content:center}
+}
+.hero{text-align:center;padding:100px 20px}
+.hero h1{font-size:48px;color:#00FF88;text-shadow:0 0 25px #00FF88}
+.hero p{margin-top:15px;opacity:.8}
+
+/* BOTÃO ENERGIA */
+.cta{
+ margin-top:25px;padding:15px 35px;border:none;border-radius:30px;
+ background:#00FF88;color:#000;font-weight:600;cursor:pointer;
+ position:relative;overflow:hidden;
+ box-shadow:0 0 20px #00FF88;transition:.3s
+}
+.cta::before{
+ content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
+ background:linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent);
+ transition:.5s;
+}
+.cta:hover::before{left:100%}
+.cta:hover{transform:scale(1.05);box-shadow:0 0 40px #00FF88}
+
+.section{padding:80px 20px;text-align:center}
+.form input{padding:12px;margin:10px;border-radius:8px;border:none;width:250px}
+
+.whatsapp{
+ position:fixed;bottom:140px;right:20px;background:#00FF88;color:#000;
+ padding:15px;border-radius:50%;font-weight:bold;
+ box-shadow:0 0 20px #00FF88;text-decoration:none;z-index:1000;
+}
+
+
+
+.counter{font-size:18px;margin-top:10px;color:#00FF88}
+
+.scarcity{position:fixed;bottom:0;left:0;width:100%;background:#00FF88;color:#000;text-align:center;padding:10px;font-weight:600;box-shadow:0 -2px 20px #00FF88;z-index:999}
+
+.toast{position:fixed;bottom:90px;left:20px;background:#111;padding:15px 20px;border-radius:10px;box-shadow:0 0 15px #00FF88;opacity:0;transform:translateY(20px);transition:.5s;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:1000}
+.popup-content{background:#111;padding:30px;border-radius:15px;text-align:center;box-shadow:0 0 30px #00FF88}
+
+
+/* SLIDER */
+/* ===== SLIDER ===== */
+.slider{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  padding:20px;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+
+.slider::-webkit-scrollbar{display:none}
+
+.slides{
+  display:flex;
+  gap:20px;
+}
+
+/* ===== CARD ===== */
+.model{
+  flex:0 0 75%;
+  max-width:280px;
+  scroll-snap-align:center;
+  background:#111;
+  border-radius:15px;
+  padding:15px;
+  transition:.4s;
+}
+
+@media(min-width:768px){
+  .model{flex:0 0 30%;}
+}
+
+/* ===== ATIVO ===== */
+.model.active{
+  transform:scale(1.12);
+  box-shadow:0 0 35px #00FF88;
+}
+
+/* IMAGEM SCOOTER */
+.scooter-img{
+ width:100%;
+ border-radius:10px;
+ margin-bottom:10px;
+ animation:float 4s ease-in-out infinite;
+ transition:.3s;
+}
+
+/* FLOAT */
+@keyframes float{
+ 0%{transform:translateY(0)}
+ 50%{transform:translateY(-10px)}
+ 100%{transform:translateY(0)}
+}
+
+/* HOVER GLOW */
+.model:hover{
+ box-shadow:0 0 25px #00FF88;
+}
+.model:hover .scooter-img{
+ filter:drop-shadow(0 0 15px #00FF88);
+}
+
+/* SNAP + SCROLL */
+.slider{
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  cursor:grab;
+}
+.slider::-webkit-scrollbar{display:none}
+
+/* SNAP CARD */
+.model{
+  scroll-snap-align:center;
+  transition:.3s;
+}
+
+/* CARD ATIVO */
+.model.active{
+  transform:scale(1.08);
+  box-shadow:0 0 30px #00FF88;
+}
+
+/* DOTS */
+.dots{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#555;
+}
+.dot.active{
+  background:#00FF88;
+}
+
+/* SETAS */
+.arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:#00FF88;
+  color:#000;
+  border:none;
+  border-radius:50%;
+  width:40px;
+  height:40px;
+  cursor:pointer;
+  box-shadow:0 0 15px #00FF88;
+  z-index:10;
+}
+.arrow.left{left:10px}
+.arrow.right{right:10px}
+
+.whatsapp{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="loader" id="loader">
+  <img src="logogenesis.png" alt="logo">
+</div>
+
+<canvas id="energyCanvas"></canvas>
+
+<header>
+<div class="logo"><img src="logogenesis.png"></div>
+</header>
+
+<section class="hero">
+<h1>PARE DE GASTAR COM GASOLINA ⚡</h1>
+<p>Sem gasolina. Sem dor de cabeça. Só carregar e sair.</p>
+<div id="online" class="counter"></div>
+<button class="cta" onclick="abrirWhats()">Falar no WhatsApp</button>
+</section>
+
+<!-- SLIDER DE SCOOTERS -->
+<!-- SLIDER DE SCOOTERS -->
+<section class="section">
+<h2>Nossos modelos ⚡</h2>
+
+<div style="position:relative">
+
+<button class="arrow left" onclick="scrollSlider(-1)">←</button>
+<button class="arrow right" onclick="scrollSlider(1)">→</button>
+
+<div class="slider" id="slider">
+  <div class="slides">
+
+    <div class="card model">
+      <img src="juna.jpg" class="scooter-img">
+      <button class="cta" onclick="falarModelo('Juna')">Quero saber mais</button>
+    </div>
+
+    <div class="card model">
+      <img src="street.jpg" class="scooter-img">
+      
+      <button class="cta" onclick="falarModelo('Street')">Quero saber mais</button>
+    </div>
+
+    <div class="card model">
+      <img src="urban.jpg" class="scooter-img">
+      
+      <button class="cta" onclick="falarModelo('Urban')">Quero saber mais</button>
+    </div>
+
+    <div class="card model">
+      <img src="x13.jpg" class="scooter-img">
+      
+      <button class="cta" onclick="falarModelo('X13')">Quero saber mais</button>
+    </div>
+
+    <div class="card model">
+      <img src="m19.jpg" class="scooter-img">
+      
+      <button class="cta" onclick="falarModelo('M19')">Quero saber mais</button>
+    </div>
+
+    <div class="card model">
+      <img src="triciclo.jpg" class="scooter-img">
+      
+      <button class="cta" onclick="falarModelo('Triciclo')">Quero saber mais</button>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<div class="dots" id="dots"></div>
+
+</section>
+
+<section class="section">
+<h2>Receba uma proposta</h2>
+<div class="form">
+<input id="nome" placeholder="Seu nome"><br>
+<input id="telefone" placeholder="WhatsApp"><br>
+<button class="cta" onclick="enviarLead()">Quero saber valores</button>
+</div>
+</section>
+
+<section class="section">
+<h2>📍 Nossa loja</h2>
+
+<!-- MAPA EMBUTIDO -->
+<div style="margin-top:20px;border-radius:15px;overflow:hidden;box-shadow:0 0 20px rgba(0,255,136,.2);position:relative">
+<iframe
+  src="https://www.google.com/maps?q=Genesis+Mobilidade+Joy+Scooter,+R.+Dr.+Luiz+Renn%C3%B3,+21+-+S%C3%A3o+Vicente,+Itajub%C3%A1+-+MG&output=embed"
+  width="100%"
+  height="300"
+  style="border:0;"
+  allowfullscreen=""
+  loading="lazy">
+</iframe>
+
+
+</div>
+
+<p style="margin-top:15px">
+<a href="https://www.google.com/maps/search/?api=1&query=Genesis+Mobilidade+Joy+Scooter,+R.+Dr.+Luiz+Renn%C3%B3,+21+-+S%C3%A3o+Vicente,+Itajub%C3%A1+-+MG,+37504-050" target="_blank" style="color:#00FF88;text-decoration:underline">Abrir no Google Maps</a>
+<br>
+<a href="https://waze.com/ul?q=Genesis%20Mobilidade%20Joy%20Scooter%20Itajuba%20MG" target="_blank" style="color:#00FF88;text-decoration:underline">Abrir no Waze</a>
+</p>
+</section>
+
+<div class="scarcity">⚠️ Restam 5 unidades com condição especial hoje</div>
+<div class="toast" id="toast"></div>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h2>⚠️ ESPERA!</h2>
+    <p>Você pode economizar MUITO, começando hoje.</p>
+    <button class="cta" onclick="abrirWhats()">Falar agora</button>
+  </div>
+</div>
+
+<a class="whatsapp" onclick="abrirWhats()">
+  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="28">
+</a>
+
+
+<script>
+// LOADER
+window.addEventListener("load",()=>{
+ setTimeout(()=>{
+  document.getElementById('loader').style.display='none';
+ },1200);
+});
+
+function abrirWhats(){window.open("https://wa.me/5535998501811","_blank")}
+function falarModelo(modelo){
+ let msg=`Olá, quero saber mais sobre a ${modelo}`
+ window.open(`https://wa.me/5535998501811?text=${encodeURIComponent(msg)}`,'_blank')
+}
+
+function enviarLead(){
+let nome=document.getElementById('nome').value
+let tel=document.getElementById('telefone').value
+let msg=`Olá! Meu nome é ${nome} e quero saber sobre as scooters. Meu número: ${tel}`
+window.open(`https://wa.me/5535998501811?text=${encodeURIComponent(msg)}`,'_blank')
+}
+
+function pessoasOnline(){
+const n=Math.floor(Math.random()*8)+3;
+document.getElementById('online').innerText=`👀 ${n} pessoas vendo agora`;
+}
+setInterval(pessoasOnline,5000);pessoasOnline();
+
+const nomes=["João","Maria","Carlos","Ana","Pedro","Lucas"];
+function mostrarToast(){
+const nome=nomes[Math.floor(Math.random()*nomes.length)];
+const el=document.getElementById('toast');
+el.innerText=`${nome} acabou de comprar uma scooter ⚡`;
+el.classList.add('show');
+setTimeout(()=>el.classList.remove('show'),4000);
+}
+setInterval(mostrarToast,8000);
+
+let saiu=false;
+document.addEventListener("mouseout",function(e){
+ if(e.clientY<10 && !saiu){
+  document.getElementById('popup').style.display='flex';
+  saiu=true;
+ }
+});
+
+const canvas=document.getElementById('energyCanvas');const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+
+let particles=[];
+let totalParticles = window.innerWidth < 768 ? 30 : 80;
+for(let i=0;i<totalParticles;i++){
+ let speed = window.innerWidth < 768 ? 0.6 : 2;
+ particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5)*speed,vy:(Math.random()-0.5)*speed})
+}
+
+let glowX=canvas.width/2, glowY=canvas.height/2;
+canvas.addEventListener('mousemove',(e)=>{glowX=e.clientX;glowY=e.clientY});
+canvas.addEventListener('touchmove',(e)=>{const t=e.touches[0];glowX=t.clientX;glowY=t.clientY});
+canvas.addEventListener('click',(e)=>{
+ particles.forEach(p=>{
+  let dx=p.x-e.clientX,dy=p.y-e.clientY,dist=Math.sqrt(dx*dx+dy*dy)||1;
+  p.vx+=dx/dist*3;p.vy+=dy/dist*3;
+ })
+});
+
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ let gradient=ctx.createRadialGradient(glowX,glowY,0,glowX,glowY,150);
+ gradient.addColorStop(0,'rgba(0,255,136,0.25)');
+ gradient.addColorStop(1,'transparent');
+ ctx.fillStyle=gradient;ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.strokeStyle='#00FF88';ctx.shadowBlur=15;ctx.shadowColor='#00FF88';
+
+ particles.forEach(p=>{
+  p.x+=p.vx;p.y+=p.vy;
+  if(p.x<0||p.x>canvas.width)p.vx*=-1;
+  if(p.y<0||p.y>canvas.height)p.vy*=-1;
+  ctx.beginPath();ctx.arc(p.x,p.y,1,0,Math.PI*2);
+  ctx.fillStyle='#00FF88';ctx.fill();
+ });
+
+ for(let i=0;i<particles.length;i++){
+  for(let j=i;j<particles.length;j++){
+   let dx=particles[i].x-particles[j].x;
+   let dy=particles[i].y-particles[j].y;
+   let d=Math.sqrt(dx*dx+dy*dy);
+   let maxDist = window.innerWidth < 768 ? 80 : 120;
+   if(d<maxDist){
+    ctx.beginPath();
+    ctx.moveTo(particles[i].x,particles[i].y);
+    ctx.lineTo(particles[j].x,particles[j].y);
+    ctx.stroke();
+   }
+  }
+ }
+ requestAnimationFrame(draw);
+}
+
+draw();
+
+// SLIDER MANUAL (TOQUE E ARRASTAR)
+let slider = document.getElementById('slider');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener('mouseleave', () => isDown = false);
+slider.addEventListener('mouseup', () => isDown = false);
+
+slider.addEventListener('mousemove', (e) => {
+  if(!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2;
+  slider.scrollLeft = scrollLeft - walk;
+});
+
+// TOUCH MOBILE
+slider.addEventListener('touchstart', (e) => {
+  startX = e.touches[0].pageX;
+  scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener('touchmove', (e) => {
+  const x = e.touches[0].pageX;
+  const walk = (x - startX) * 2;
+  slider.scrollLeft = scrollLeft - walk;
+});
+
+document.addEventListener("DOMContentLoaded", function(){
+
+// ===== CARROSSEL AVANÇADO =====
+let slider = document.getElementById('slider');
+let slides = document.querySelectorAll('.model');
+let dotsContainer = document.getElementById('dots');
+
+// proteção extra
+if(!slider || slides.length === 0) return;
+
+// criar bolinhas
+slides.forEach((_,i)=>{
+  let d=document.createElement('div');
+  d.classList.add('dot');
+  if(i===0)d.classList.add('active');
+  dotsContainer.appendChild(d);
+});
+
+let dots=document.querySelectorAll('.dot');
+
+// detectar card central
+function updateActive(){
+  let center = slider.scrollLeft + slider.offsetWidth/2;
+
+  slides.forEach((el,i)=>{
+    let box = el.offsetLeft + el.offsetWidth/2;
+    let dist = Math.abs(center - box);
+
+    el.classList.remove('active');
+    dots[i].classList.remove('active');
+
+    if(dist < el.offsetWidth/2){
+      el.classList.add('active');
+      dots[i].classList.add('active');
+    }
+  });
+}
+
+slider.addEventListener('scroll', updateActive);
+
+// setas
+window.scrollSlider = function(dir){
+  let width = slides[0].offsetWidth + 20;
+  slider.scrollBy({left: dir * width, behavior:'smooth'});
+}
+
+// INÉRCIA
+let isDown=false,startX,scrollLeft,velocity=0,raf;
+
+slider.addEventListener('mousedown',(e)=>{
+  isDown=true;
+  startX=e.pageX;
+  scrollLeft=slider.scrollLeft;
+});
+
+slider.addEventListener('mouseup',()=>{
+  isDown=false;
+  momentum();
+});
+
+slider.addEventListener('mouseleave',()=> isDown=false);
+
+slider.addEventListener('mousemove',(e)=>{
+  if(!isDown)return;
+  let walk=(e.pageX-startX);
+  velocity=walk*0.2;
+  slider.scrollLeft=scrollLeft-walk;
+});
+
+slider.addEventListener('touchstart',(e)=>{
+  startX=e.touches[0].pageX;
+  scrollLeft=slider.scrollLeft;
+});
+
+slider.addEventListener('touchmove',(e)=>{
+  let walk=(e.touches[0].pageX-startX);
+  velocity=walk*0.2;
+  slider.scrollLeft=scrollLeft-walk;
+});
+
+slider.addEventListener('touchend',momentum);
+
+function momentum(){
+  cancelAnimationFrame(raf);
+  function run(){
+    slider.scrollLeft -= velocity;
+    velocity *= 0.95;
+    if(Math.abs(velocity)>0.5){
+      raf=requestAnimationFrame(run);
+    }
+  }
+  run();
+}
+
+});
+</script>
+
+</body>
+</html>
