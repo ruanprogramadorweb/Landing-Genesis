@@ -89,13 +89,8 @@ header{display:flex;justify-content:space-between;padding:20px}
 /* SLIDER */
 /* ===== SLIDER ===== */
 
- .slider{
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-}
- .slider{
+
+.slider{
   display:flex;
   gap:20px;
   overflow-x:auto;
@@ -103,9 +98,13 @@ header{display:flex;justify-content:space-between;padding:20px}
   scroll-snap-type:x mandatory;
   scroll-behavior:smooth;
   -webkit-overflow-scrolling:touch;
+
+  touch-action: pan-x; /* 👈 ESSENCIAL pro swipe no celular */
 }
 
-.slider::-webkit-scrollbar{display:none}
+.slider::-webkit-scrollbar{
+  display:none;
+}
 
 .slides{
   display:flex;
